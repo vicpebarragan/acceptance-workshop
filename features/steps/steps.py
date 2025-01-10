@@ -56,7 +56,7 @@ def step_then_output_should_contain(context, expected_tasks):
 
 
 # Step 7: Given the to-do list contains the task: {task} - Pending
-@given('the to-do list contains the task: {task} - Pending')
+@given('the to-do list contains the task: {task} – Pending')
 def step_given_list_with_one_task(context, task):
     global task_list
     task_list = {1: {'name': task, 'completed': False, 'priority': 'Low'}}
@@ -95,6 +95,9 @@ def step_when_user_clears_list(context):
 def step_then_list_should_be_empty(context):
     assert not task_list
 
+
+
+
 # Step 13: Given the to-do list is empty
 @given('the to-do list is empty 2')
 def step_given_empty_list_priority(context):
@@ -114,31 +117,44 @@ def step_when_user_adds_task_with_priority(context, task_name, priority):
 def step_then_list_should_contain_with_priority(context, expected_task):
     assert context.output == expected_task
 
+
+
+
+
+# Step : Given the to-do list contains the task: ID {task_id}: {task} - Pending - Priority: {priority}
+@given('the to-do list contains the task edit: ID 1: {task} - Pending - Priority: Low')
+def step_given_list_with_one_task_edit(context, task):
+    global task_list
+    task_list = {1: {'name': task, 'completed': False, 'priority': 'Low'}}
+
 # Step 16: When the user edits task ID {task_id} to change the name to "{new_name}" and the priority to "{new_priority}"
 @when('the user edits task ID {task_id} to change the name to "{new_name}" and the priority to "{new_priority}"')
 def step_when_user_edits_task(context, task_id, new_name, new_priority):
     f = io.StringIO()
     with contextlib.redirect_stdout(f):
-        edit_task(task_list, task_id, new_name, new_priority)
+        edit_task(task_list, int(task_id), new_name, new_priority)
     context.output = f.getvalue().strip()
 
 # Step 17: Then the to-do list should contain the task "{new_name}" with ID {task_id} and priority {new_priority}
 @then('the to-do list should contain the task "{new_name}" with ID {task_id} and priority {new_priority}')
 def step_then_task_should_be_updated(context, new_name, task_id, new_priority):
-    task = task_list[task_id]
+    task = task_list[int(task_id)]
     assert task['name'] == new_name, f"Expected task name to be '{new_name}', but got '{task['name']}'"
     assert task['priority'] == new_priority, f"Expected priority to be '{new_priority}', but got '{task['priority']}'"
+
+
+
 
 # Step 18: When the user deletes the task with ID {task_id}
 @when('the user deletes the task with ID {task_id}')
 def step_when_user_deletes_task(context, task_id):
     f = io.StringIO()
     with contextlib.redirect_stdout(f):
-        delete_task(task_list, task_id)
+        delete_task(task_list, int(task_id))
     context.output = f.getvalue().strip()
 
 # Step 19: Then the to-do list should contain only "{remaining_tasks}"
 @then('the to-do list should contain only "{remaining_tasks}"')
 def step_then_list_should_contain_only_remaining_tasks(context, remaining_tasks):
-    remaining_task_names = [task['name'] for task in task_list.values()]
+    remaining_task_names = [f"ID {task[0]}: {task[1]['name']}" for task in task_list.items()]
     assert ', '.join(remaining_task_names) == remaining_tasks, f"Expected remaining tasks: {remaining_tasks}, but got: {', '.join(remaining_task_names)}"

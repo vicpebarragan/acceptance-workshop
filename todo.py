@@ -37,12 +37,13 @@ def clear_tasks(task_list):
     print("All tasks have been deleted.")
 
 
-def edit_task(task_list, task_id):
+def edit_task(task_list, task_id, new_name=None, new_priority=None):
     """Edit the name or priority of an existing task."""
     if task_id in task_list:
-        print(f"Editing Task ID {task_id}: {task_list[task_id]['name']}")
-        new_name = input("Enter new name (leave blank to keep current name): ")
-        new_priority = input("Enter new priority (High, Medium, Low) or leave blank to keep current: ")
+        if (new_name == None) and (new_priority == None):
+            print(f"Editing Task ID {task_id}: {task_list[task_id]['name']}")
+            new_name = input("Enter new name (leave blank to keep current name): ")
+            new_priority = input("Enter new priority (High, Medium, Low) or leave blank to keep current: ")
 
         if new_name:
             task_list[task_id]['name'] = new_name
